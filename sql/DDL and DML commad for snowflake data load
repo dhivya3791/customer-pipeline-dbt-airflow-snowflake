@@ -1,0 +1,64 @@
+USE CUSTOMER_DB;
+---- dim_customer
+CREATE OR REPLACE TABLE dim_customer (
+    customer_id INT PRIMARY KEY,
+    customer_name STRING,
+    customer_email STRING,
+    customer_region STRING
+);
+
+INSERT INTO dim_customer (customer_id, customer_name, customer_email, customer_region) VALUES
+(1, 'Alice Johnson', 'alice@example.com', 'North'),
+(2, 'Bob Smith', 'bob@example.com', 'South'),
+(3, 'Charlie Lee', 'charlie@example.com', 'East'),
+(4, 'Diana Adams', 'diana@example.com', 'West'),
+(5, 'Ethan Black', 'ethan@example.com', 'North');
+
+-- dim_product
+CREATE OR REPLACE TABLE dim_product (
+    product_id INT PRIMARY KEY,
+    product_name STRING,
+    product_category STRING,
+    unit_price FLOAT
+);
+
+INSERT INTO dim_product (product_id, product_name, product_category, unit_price) VALUES
+(101, 'Laptop', 'Electronics', 899.99),
+(102, 'Smartphone', 'Electronics', 499.99),
+(103, 'Desk Chair', 'Furniture', 129.99),
+(104, 'Notebook', 'Stationery', 5.99),
+(105, 'Pen Set', 'Stationery', 12.49);
+
+-- dim date 
+CREATE OR REPLACE TABLE dim_date (
+    date_id DATE PRIMARY KEY,
+    day_of_week STRING,
+    month_name STRING,
+    quarter INT,
+    year INT
+);
+
+INSERT INTO dim_date (date_id, day_of_week, month_name, quarter, year) VALUES
+('2024-01-05', 'Friday', 'January', 1, 2024),
+('2024-02-15', 'Thursday', 'February', 1, 2024),
+('2024-03-20', 'Wednesday', 'March', 1, 2024),
+('2024-04-10', 'Wednesday', 'April', 2, 2024),
+('2024-05-25', 'Saturday', 'May', 2, 2024);
+
+-- fact order
+CREATE OR REPLACE TABLE fact_order (
+    order_id INT PRIMARY KEY,
+    customer_id INT REFERENCES dim_customer(customer_id),
+    product_id INT REFERENCES dim_product(product_id),
+    date_id DATE REFERENCES dim_date(date_id),
+    quantity INT,
+    total_amount FLOAT
+);
+
+INSERT INTO fact_order (order_id, customer_id, product_id, date_id, quantity, total_amount) VALUES
+(1001, 1, 101, '2024-01-05', 1, 899.99),
+(1002, 2, 103, '2024-02-15', 2, 259.98),
+(1003, 3, 104, '2024-03-20', 10, 59.90),
+(1004, 4, 102, '2024-04-10', 1, 499.99),
+(1005, 5, 105, '2024-05-25', 3, 37.47);
+
