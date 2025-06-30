@@ -80,6 +80,75 @@ Airflow runs `dbt run` to build models:
 ### 3. **Issue Logging**
 - Any rows failing integrity or IQR checks are written to a Snowflake table:
   - `DATA_QUALITY_ISSUES`
+  
+
+## 🧭 Unified Data Flow into Snowflake
+
+This project supports a **hybrid data ingestion strategy** by combining **cloud-native ingestion tools** with the existing **Airflow + dbt + Snowflake** pipeline.
+
+---
+
+### 1️⃣ Real-Time Clickstream Data
+
+| Stage  | Tool                                             | Purpose                         |
+|--------|--------------------------------------------------|---------------------------------|
+| Capture | AWS Kinesis / Azure Event Hub                   | Ingest streaming user activity |
+| Store   | AWS S3 / Azure Data Lake / OCI Object Storage   | Durable, scalable, cheap storage |
+| Load    | Snowpipe or AWS Glue Streaming                  | Near real-time load into Snowflake |
+
+---
+
+### 2️⃣ Batch Data from Legacy Systems
+
+| Stage    | Tool                                                       | Purpose                                |
+|----------|------------------------------------------------------------|----------------------------------------|
+| Export   | Custom scripts / Oracle Extract                            | Dump transactional data                |
+| Land     | AWS S3 / Azure Data Lake / OCI Object Storage              | Cloud staging layer                    |
+| Transform & Load | AWS Glue / Azure Data Factory / Oracle Data Integration | Clean, map, and load into Snowflake |
+
+---
+
+### 3️⃣ Post-Ingestion Processing (Your Existing Pipeline)
+
+Once data lands in Snowflake, your existing Airflow pipeline takes over:
+
+- 🧱 **dbt** transforms raw data into dimensional models (fact/dim tables)
+- 🕹 **Airflow DAG** orchestrates dbt, applies **data quality checks**
+- 📥 Any invalid rows are logged into the **`DATA_QUALITY_ISSUES`** table in Snowflake
+- based on the issue to take decision to keep the record or not
+
+---
+
+## ✅ Tool Comparison by Key Needs
+
+| Tool                             | Data Freshness              | Scalability            | Cost-Effectiveness                    |
+|----------------------------------|-----------------------------|------------------------|----------------------------------------|
+| AWS S3 + Glue                    | High (Snowpipe/streaming)   | Auto-scales            | Pay-per-use, cheap, highly reliable    |
+| Azure Data Lake + Data Factory   | Moderate to high            | Azure-native scaling   | Good for Microsoft stack users         |
+| Oracle OCI + Data Integration    | Good for Oracle systems     | High (with Data Flow)  | Efficient for on-prem Oracle migration |
+| Airflow + dbt (existing)         | Flexible (scheduled/triggered) | Scales with cluster | Free/open source, modular, flexible    |
+
+---
+
+## 🔄 End-to-End Flow Summary
+Web Clicks / Orders / CRM Data]
+↓
+[Cloud-native ingestion tools (Kinesis / Glue / Data Factory)]
+↓
+[Cloud Storage Layer (S3 / Azure Data Lake / OCI)]
+↓
+[Snowflake Raw Tables (via Snowpipe / ETL tools)]
+↓
+[dbt Models for transformation]
+↓
+[Data Quality Checks (Python + Airflow)]
+↓
+[Final Reporting Tables + Logged Issues]
+
+| Tool                           | Purpose                                                                                                                                                        | Value                                                                          |
+| ------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------ |
+| **ChatGPT** (GPT-4)            | - DAG debugging<br>- dbt integration help<br>- Data quality logic (e.g., referential checks, IQR) <br> -  Conceptual design help | Fast explanations, code examples, cleaned up vague errors, wrote documentation |
+
 
 
 
