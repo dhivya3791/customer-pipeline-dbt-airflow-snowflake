@@ -1,4 +1,4 @@
-# customer-pipeline-dbt-powerbi-airflow
+# customer-pipeline-dbt-airflow
 End-to-end dbt project using Snowflake
 # Customer Pipeline – dbt Project (Snowflake)
 
