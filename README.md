@@ -145,6 +145,9 @@ Web Clicks / Orders / CRM Data]
 ↓
 [Final Reporting Tables + Logged Issues]
 
+🤖 AI Tools Used
+
+
 | Tool                           | Purpose                                                                                                                                                        | Value                                                                          |
 | ------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------ |
 | **ChatGPT** (GPT-4)            | - DAG debugging<br>- dbt integration help<br>- Data quality logic (e.g., referential checks, IQR) <br> -  Conceptual design help | Fast explanations, code examples, cleaned up vague errors, wrote documentation |
