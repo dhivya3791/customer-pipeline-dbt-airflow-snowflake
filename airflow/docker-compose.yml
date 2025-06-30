@@ -1,0 +1,46 @@
+version: '3'
+
+services:
+  postgres:
+    image: postgres:13
+    environment:
+      POSTGRES_USER: airflow
+      POSTGRES_PASSWORD: airflow
+      POSTGRES_DB: airflow
+    volumes:
+      - postgres-db-volume:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  airflow:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      - postgres
+
+    # ✅ Load environment variables from .env file
+    env_file:
+      - .env
+
+    environment:
+      AIRFLOW__CORE__EXECUTOR: LocalExecutor
+      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres/airflow
+      AIRFLOW__CORE__FERNET_KEY: ''
+      AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: 'false'
+      AIRFLOW__CORE__LOAD_EXAMPLES: 'false'
+
+    volumes:
+      - ./airflow/dags:/opt/airflow/dags
+      - ./airflow/airflow.cfg:/opt/airflow/airflow.cfg
+      - ./airflow/logs:/opt/airflow/logs
+      - ./airflow/dbt_project:/opt/airflow/dbt_project
+
+    ports:
+      - "8080:8080"
+
+    command: bash -c  "airflow db migrate &&
+                      airflow webserver --port 8080 &
+                      airflow scheduler"
+volumes:
+  postgres-db-volume:
